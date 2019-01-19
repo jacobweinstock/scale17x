@@ -1,5 +1,6 @@
 GOLANG_BINARY := scale17x
 PYTHON_BINARY := scale17x-py
+.DEFAULT_GOAL := help
 
 
 .PHONY: build-linux
