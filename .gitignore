@@ -10,3 +10,9 @@
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+__pycache__
+bin/
+ab0x.go
+golang/extmodules/scale17x-py
+scale17x.code-workspace

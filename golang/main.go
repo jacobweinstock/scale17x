@@ -26,7 +26,7 @@ func main() {
 	}
 
 	pResponse := pythonResponse{}
-	// marshall cli stdout to json
+	// unmarshall cli stdout to json
 	jErr := json.Unmarshal(out, &pResponse)
 	if err != nil {
 		log.Debug("jErr: %v", jErr)
@@ -42,7 +42,7 @@ func GenericCMD() (outStr, errStr []byte) {
 	if derr != nil {
 		log.Fatal(derr)
 	}
-	cmds := dir + "/run"
+	cmds := dir + "/" + pythonbinary.PythonBinary
 	cmd := exec.Command("/bin/sh", "-c", cmds)
 
 	var stdout, stderr bytes.Buffer
