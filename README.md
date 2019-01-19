@@ -26,12 +26,12 @@ Makefile Help
 
 make [targets...]
 Targets:
-  build-linux:            Build the Both the Golang and Python Binaries (Platform: Linux)
+  build-linux:            Build Both the Golang and Python Binaries (Platform: Linux)
   build-linux-python:     Build the Python Binary (Platform: Linux)
   build-linux-golang:     Build the Golang Binary (Platform: Linux)
   runtime-linux:          Docker Container to run Built Linux Binaries
-  build-darwin:           Build the Both the Golang and Python Binaries (Platform: Darwin)
+  build-darwin:           Build Both the Golang and Python Binaries (Platform: Darwin)
   build-darwin-python:    Build the Python Binary (Platform: Darwin)
   build-darwin-golang:    Build the Golang Binary (Platform: Darwin)
-  clean:                  Clean bin directory
+  clean:                  Clean the bin directory
 ```

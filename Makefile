@@ -4,7 +4,7 @@ PYTHON_BINARY := scale17x-py
 
 
 .PHONY: build-linux
-build-linux: build-linux-python build-linux-golang	## Build the Both the Golang and Python Binaries (Platform: Linux)
+build-linux: build-linux-python build-linux-golang	## Build Both the Golang and Python Binaries (Platform: Linux)
 
 .PHONY: build-linux-python
 build-linux-python:	## Build the Python Binary (Platform: Linux)
@@ -24,7 +24,7 @@ runtime-linux:		## Docker Container to run Built Linux Binaries
 		docker run -it --rm -w /app -v $(PWD)/bin/linux/golang/:/app ubuntu:18.04 bash
 
 .PHONY: build-darwin
-build-darwin: build-darwin-python build-darwin-golang	## Build the Both the Golang and Python Binaries (Platform: Darwin)
+build-darwin: build-darwin-python build-darwin-golang	## Build Both the Golang and Python Binaries (Platform: Darwin)
 
 .PHONY: build-darwin-python
 build-darwin-python:	## Build the Python Binary (Platform: Darwin)
@@ -40,7 +40,7 @@ build-darwin-golang:	## Build the Golang Binary (Platform: Darwin)
 		(cd golang && GOOS=darwin GOARCH=amd64 go build -o ../bin/darwin/golang/$(GOLANG_BINARY)-darwin main.go)
 
 .PHONY: clean
-clean:	## Clean bin directory
+clean:	## Clean the bin directory
 		@rm -rf bin/*
 
 .PHONY: help
