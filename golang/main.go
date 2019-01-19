@@ -8,7 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/scale17x/golang/pythonbinary"
+	"github.com/jacobweinstock/scale17x/golang/pythonbinary"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -42,7 +42,7 @@ func GenericCMD() (outStr, errStr []byte) {
 	if derr != nil {
 		log.Fatal(derr)
 	}
-	cmds := dir + "/" + pythonbinary.PythonBinary
+	cmds := dir + "/" + pythonbinary.PythonBinaryName
 	cmd := exec.Command("/bin/sh", "-c", cmds)
 
 	var stdout, stderr bytes.Buffer

@@ -1,4 +1,4 @@
-module github.com/scale17x/golang
+module github.com/jacobweinstock/scale17x/golang
 
 require (
 	github.com/sirupsen/logrus v1.3.0

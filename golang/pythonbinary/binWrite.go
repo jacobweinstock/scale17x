@@ -6,13 +6,13 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/scale17x/golang/extmodules"
+	"github.com/jacobweinstock/scale17x/golang/extmodules"
 	log "github.com/sirupsen/logrus"
 )
 
 const (
-	// PythonBinary - final python binary name
-	PythonBinary = "scale17x-py"
+	// PythonBinaryName - final python binary name
+	PythonBinaryName = "scale17x-py"
 )
 
 func location() string {
@@ -21,13 +21,13 @@ func location() string {
 		log.Fatal(derr)
 	}
 
-	return fmt.Sprintf("%s/%s", dir, PythonBinary)
+	return fmt.Sprintf("%s/%s", dir, PythonBinaryName)
 }
 
-// WriteToDisk - write binary from virtual filesystem to client filesystem
+// WriteToDisk - write binary from virtual filesystem to local filesystem
 func WriteToDisk() error {
 	log.Debug("Writing binary to disk")
-	b, err := extmodules.ReadFile(fmt.Sprintf("extmodules/%s", PythonBinary))
+	b, err := extmodules.ReadFile(fmt.Sprintf("extmodules/%s", PythonBinaryName))
 	if err != nil {
 		log.Fatal(err)
 		return err
@@ -41,7 +41,7 @@ func WriteToDisk() error {
 	return nil
 }
 
-// DeleteFromDisk - delete the binary from the client filesystem
+// DeleteFromDisk - delete the binary from the local filesystem
 func DeleteFromDisk() error {
 	log.Debug("Cleaning up binary")
 	loc := location()
