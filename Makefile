@@ -35,4 +35,4 @@ build-golang-darwin:
 		mkdir -p bin/darwin/golang
 		cp -a bin/darwin/python/$(PYTHON_BINARY) golang/extmodules/$(PYTHON_BINARY)
 		(cd golang && fileb0x extmodules.yaml)
-		(cd golang && GOOS=darwin GOARCH=amd64 /usr/local/Cellar/go/1.11.4/bin/go build -o ../bin/darwin/golang/$(GOLANG_BINARY)-darwin main.go)
+		(cd golang && GOOS=darwin GOARCH=amd64 go build -o ../bin/darwin/golang/$(GOLANG_BINARY)-darwin main.go)
