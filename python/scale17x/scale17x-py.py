@@ -9,7 +9,7 @@ if len(sys.argv) > 1:
 else:
     name = 'Anonymous'
 output = {
-    'msg': 'Hello {}! Coming to you from inside the Python Binary'.format(name),
+    'msg': 'Hello {}! This is from inside the Python Binary'.format(name),
     'date': now.strftime("%Y-%m-%d %H:%M:%S")
 }
 print(json.dumps(output))
