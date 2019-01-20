@@ -9,19 +9,21 @@ build-linux: build-linux-python build-linux-golang	## Build Both the Golang and 
 .PHONY: build-linux-python
 build-linux-python:	## Build the Python Binary (Platform: Linux)
 		mkdir -p bin/linux/python
-		(cd python && docker build --compress --force-rm -t local/$(GOLANG_BINARY):python-linux -f Dockerfile .)
-		docker run --rm -v $(PWD)/bin/linux/python:/tmp/bin local/$(GOLANG_BINARY):python-linux sh -c 'cp -a /home/bin/linux/python/$(PYTHON_BINARY) /tmp/bin/$(PYTHON_BINARY)'
+		(cd python && docker build --compress --force-rm -t local/$(GOLANG_BINARY):linux-python -f Dockerfile .)
+		#docker run --rm -v $(PWD)/bin/linux/python:/tmp/bin local/$(GOLANG_BINARY):python-linux sh -c 'cp -a /home/bin/linux/python/$(PYTHON_BINARY) /tmp/bin/$(PYTHON_BINARY)'
+		docker rm -f cont1 || true && docker create --name cont1 local/${GOLANG_BINARY}:linux-python && docker cp cont1:/home/bin/linux/python/${PYTHON_BINARY} bin/linux/python/${PYTHON_BINARY} && docker rm -f cont1
 		cp -a bin/linux/python/$(PYTHON_BINARY) golang/extmodules/$(PYTHON_BINARY)
 
 .PHONY: build-linux-golang
 build-linux-golang:	## Build the Golang Binary (Platform: Linux)
 		mkdir -p bin/linux/golang
 		(cd golang && docker build --compress --force-rm -t local/$(GOLANG_BINARY):linux-golang -f Dockerfile .)
-		docker run --rm -v $(PWD)/bin/linux/golang:/tmp/bin local/$(GOLANG_BINARY):linux-golang sh -c 'cp -a /home/$(GOLANG_BINARY) /tmp/bin/$(GOLANG_BINARY)'
+		#docker run --rm -v $(PWD)/bin/linux/golang:/tmp/bin local/$(GOLANG_BINARY):linux-golang sh -c 'cp -a /home/$(GOLANG_BINARY) /tmp/bin/$(GOLANG_BINARY)'
+		docker rm -f cont2 || true && docker create --name cont2 local/${GOLANG_BINARY}:linux-golang && docker cp cont2:/home/${GOLANG_BINARY} bin/linux/golang/${GOLANG_BINARY} && docker rm -f cont2
 
 .PHONY: runtime-linux
 runtime-linux:		## Docker Container to run Built Linux Binaries
-		docker run -it --rm -w /app -v $(PWD)/bin/linux/golang/:/app ubuntu:18.04 bash
+		docker run -it --rm -p8080 -w /app -v $(PWD)/bin/linux/golang/:/app ubuntu:18.04 bash
 
 .PHONY: build-darwin
 build-darwin: build-darwin-python build-darwin-golang	## Build Both the Golang and Python Binaries (Platform: Darwin)
