@@ -1,9 +1,11 @@
 package pythonbinary
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 
 	"github.com/jacobweinstock/scale17x/golang/extmodules"
@@ -25,30 +27,46 @@ func location() string {
 }
 
 // WriteToDisk - write binary from virtual filesystem to local filesystem
-func WriteToDisk() error {
+func WriteToDisk() {
 	log.Debug("Writing binary to disk")
 	b, err := extmodules.ReadFile(fmt.Sprintf("extmodules/%s", PythonBinaryName))
 	if err != nil {
 		log.Fatal(err)
-		return err
 	}
 	loc := location()
 	wErr := ioutil.WriteFile(loc, b, 0770)
 	if wErr != nil {
 		log.Fatal(wErr)
-		return wErr
 	}
-	return nil
 }
 
 // DeleteFromDisk - delete the binary from the local filesystem
-func DeleteFromDisk() error {
+func DeleteFromDisk() {
 	log.Debug("Cleaning up binary")
 	loc := location()
 	err := os.Remove(loc)
 	if err != nil {
 		log.Error(err)
-		return err
 	}
-	return nil
+}
+
+// RunCMD - call the python binary
+func RunCMD(arg string) (outStr, errStr []byte) {
+	dir, derr := filepath.Abs(filepath.Dir(os.Args[0]))
+	if derr != nil {
+		log.Fatal(derr)
+	}
+	cmds := dir + "/" + PythonBinaryName + " " + arg
+	cmd := exec.Command("/bin/sh", "-c", cmds)
+
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	err := cmd.Run()
+	outStr, errStr = stdout.Bytes(), stderr.Bytes()
+	if err != nil {
+		log.Fatalf("cmd.Run() failed with %s", err)
+	}
+
+	return outStr, errStr
 }

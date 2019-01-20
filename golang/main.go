@@ -1,12 +1,12 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"os"
-	"os/exec"
-	"path/filepath"
+	"os/signal"
+	"syscall"
 
 	"github.com/jacobweinstock/scale17x/golang/pythonbinary"
 	log "github.com/sirupsen/logrus"
@@ -17,42 +17,54 @@ type pythonResponse struct {
 	DATE string `json:"date"`
 }
 
+type name struct {
+	Name string `json:"name"`
+}
+
 func main() {
-	fmt.Println("Hello Scale 17x!")
-	_ = pythonbinary.WriteToDisk()
-	out, err := GenericCMD()
+	pythonbinary.WriteToDisk()
+	defer pythonbinary.DeleteFromDisk()
+	sigs := make(chan os.Signal, 1)
+	done := make(chan bool, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		sig := <-sigs
+		fmt.Println()
+		fmt.Printf("Caught: %v\n", sig)
+		done <- true
+	}()
+
+	http.HandleFunc("/hello", hello)
+
+	fmt.Println("Starting up...")
+	go http.ListenAndServe(":8080", nil)
+	fmt.Println("Listening on Port 8080")
+	<-done
+	fmt.Println("Cleaning up and exiting")
+}
+
+func logPythonResponse(out []byte) {
+	pResponse := pythonResponse{}
+	err := json.Unmarshal(out, &pResponse)
+	if err != nil {
+		log.Debug("jErr: %v", err)
+	}
+	fmt.Printf("msg: %s\ndate: %s\n", pResponse.MSG, pResponse.DATE)
+}
+
+func hello(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("content-type", "application/json;charset=utf-8")
+	decoder := json.NewDecoder(r.Body)
+	var rr name
+	dErr := decoder.Decode(&rr)
+	if dErr != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+	result, err := pythonbinary.RunCMD(rr.Name)
 	if string(err) != "" {
 		fmt.Println(string(err))
 	}
-
-	pResponse := pythonResponse{}
-	// unmarshall cli stdout to json
-	jErr := json.Unmarshal(out, &pResponse)
-	if err != nil {
-		log.Debug("jErr: %v", jErr)
-	}
-
-	fmt.Printf("msg: %s\ndate: %s\n", pResponse.MSG, pResponse.DATE)
-	_ = pythonbinary.DeleteFromDisk()
-}
-
-// GenericCMD - run the daemon
-func GenericCMD() (outStr, errStr []byte) {
-	dir, derr := filepath.Abs(filepath.Dir(os.Args[0]))
-	if derr != nil {
-		log.Fatal(derr)
-	}
-	cmds := dir + "/" + pythonbinary.PythonBinaryName
-	cmd := exec.Command("/bin/sh", "-c", cmds)
-
-	var stdout, stderr bytes.Buffer
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-	err := cmd.Run()
-	outStr, errStr = stdout.Bytes(), stderr.Bytes()
-	if err != nil {
-		log.Fatalf("cmd.Run() failed with %s", err)
-	}
-
-	return outStr, errStr
+	go logPythonResponse(result)
+	w.Write([]byte(result))
 }

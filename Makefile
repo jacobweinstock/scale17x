@@ -47,4 +47,4 @@ clean:	## Clean the bin directory
 help:
 		@echo
 		@echo "Makefile Help\n\nmake [targets...]\nTargets:"
-		@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/:.*##/: ##/' -e 's/^\(.\+\):\(.*\)/\\x1b[36m\1\\x1b[m:\2/' | sed -e 's/^/  /' | column -s## -t
+		@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/:.*##/: ##/' | sed -e 's/^/  /' | column -s## -t
