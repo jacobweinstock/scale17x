@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/jacobweinstock/scale17x/golang/pythonbinary"
+	"github.com/jacobweinstock/scale17x/golang/binutils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -22,8 +22,8 @@ type name struct {
 }
 
 func main() {
-	pythonbinary.WriteToDisk()
-	defer pythonbinary.DeleteFromDisk()
+	binutils.WriteToDisk()
+	defer binutils.DeleteFromDisk()
 	sigs := make(chan os.Signal, 1)
 	done := make(chan bool, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
@@ -61,7 +61,7 @@ func hello(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
-	result, err := pythonbinary.RunCMD(rr.Name)
+	result, err := binutils.RunCMD(rr.Name)
 	if string(err) != "" {
 		fmt.Println(string(err))
 	}
