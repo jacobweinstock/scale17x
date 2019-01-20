@@ -35,3 +35,7 @@ Targets:
   build-darwin-golang:    Build the Golang Binary (Platform: Darwin)
   clean:                  Clean the bin directory
 ```
+
+## Diagram
+
+![Diagram](diagram.png)
