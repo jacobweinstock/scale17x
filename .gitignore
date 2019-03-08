@@ -12,7 +12,9 @@
 *.out
 
 __pycache__
-bin/
+scale17x
+scale17x-py
 ab0x.go
 golang/extmodules/scale17x-py
 scale17x.code-workspace
+.vscode/

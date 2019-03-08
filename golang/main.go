@@ -2,14 +2,14 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/jacobweinstock/scale17x/golang/binutils"
-	log "github.com/sirupsen/logrus"
 )
 
 type pythonResponse struct {
@@ -22,34 +22,61 @@ type name struct {
 }
 
 func main() {
+	// write python binary to disk
 	binutils.WriteToDisk()
 	defer binutils.DeleteFromDisk()
-	sigs := make(chan os.Signal, 1)
-	done := make(chan bool, 1)
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
-	go func() {
-		sig := <-sigs
-		fmt.Println()
-		fmt.Printf("Caught: %v\n", sig)
-		done <- true
-	}()
 
+	var runtime string
+	if len(os.Args) < 2 {
+		runtime = ""
+	} else {
+		runtime = os.Args[1]
+	}
+
+	switch {
+	case strings.Contains(runtime, "web"):
+		// handle clean up and serve http
+		done := make(chan bool, 1)
+		go sigs(done)
+		serveHTTP(done)
+	default:
+		cli(runtime)
+	}
+}
+
+func cli(arg string) {
+	result, err := binutils.RunCMD(arg)
+	if string(err) != "" {
+		log.Println(string(err))
+	}
+	logPythonResponse(result)
+}
+
+func serveHTTP(done chan bool) {
 	http.HandleFunc("/hello", hello)
 
-	fmt.Println("Starting up...")
+	log.Println("Starting up...")
 	go http.ListenAndServe(":8080", nil)
-	fmt.Println("Listening on Port 8080")
+	log.Println("Listening on Port 8080")
 	<-done
-	fmt.Println("Cleaning up and exiting")
+	log.Println("Cleaning up and exiting")
+}
+
+func sigs(done chan bool) {
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	sig := <-sigs
+	log.Printf("\nCaught: %v\n", sig)
+	done <- true
 }
 
 func logPythonResponse(out []byte) {
 	pResponse := pythonResponse{}
 	err := json.Unmarshal(out, &pResponse)
 	if err != nil {
-		log.Debug("jErr: %v", err)
+		log.Fatalf("jErr: %v", err)
 	}
-	fmt.Printf("msg: %s\ndate: %s\n", pResponse.MSG, pResponse.DATE)
+	log.Printf("msg: %s date: %s\n", pResponse.MSG, pResponse.DATE)
 }
 
 func hello(w http.ResponseWriter, r *http.Request) {
@@ -63,7 +90,7 @@ func hello(w http.ResponseWriter, r *http.Request) {
 	}
 	result, err := binutils.RunCMD(rr.Name)
 	if string(err) != "" {
-		fmt.Println(string(err))
+		log.Println(string(err))
 	}
 	go logPythonResponse(result)
 	w.Write([]byte(result))

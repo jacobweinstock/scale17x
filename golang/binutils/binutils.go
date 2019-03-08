@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 
 	"github.com/jacobweinstock/scale17x/golang/extmodules"
-	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -28,7 +28,7 @@ func location() string {
 
 // WriteToDisk - write binary from virtual filesystem to local filesystem
 func WriteToDisk() {
-	log.Debug("Writing binary to disk")
+	log.Println("Writing binary to disk")
 	b, err := extmodules.ReadFile(fmt.Sprintf("extmodules/%s", PythonBinaryName))
 	if err != nil {
 		log.Fatal(err)
@@ -42,11 +42,11 @@ func WriteToDisk() {
 
 // DeleteFromDisk - delete the binary from the local filesystem
 func DeleteFromDisk() {
-	log.Debug("Cleaning up binary")
+	log.Println("Cleaning up binary")
 	loc := location()
 	err := os.Remove(loc)
 	if err != nil {
-		log.Error(err)
+		log.Fatal(err)
 	}
 }
 
