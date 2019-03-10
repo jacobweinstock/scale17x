@@ -2,7 +2,7 @@
 
 `Building Golang and Python Static Binaries`
 
-This repo is the boilerplate for building a Golang Binary with an embedded static python binary.
+This repo is the boilerplate for building a Golang Binary with an embedded static python binary. Talk Slides can be found [here](https://docs.google.com/presentation/d/1Wf9dZk0k2kirI-wVTijdQ-hy0P1kKkrzK6TDAFsw7Ek/edit?usp=sharing).
 
 ## Requirements
 
